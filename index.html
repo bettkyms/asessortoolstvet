@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assessor Tool Generator</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6d28d9">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.9.0",
+    "docx": "https://esm.sh/docx@8.5.0",
+    "file-saver": "https://esm.sh/file-saver@2.0.5",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react/": "https://esm.sh/react@^19.1.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-100 font-sans">
+
+    <!-- Login Page -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white p-8 rounded-xl shadow-2xl shadow-purple-200/50">
+                <div class="flex flex-col items-center mb-6">
+                    <div id="login-logo-container" class="h-24 w-24 mb-4"></div>
+                    <h1 class="text-2xl font-bold text-gray-800">Assessor Tool Generator</h1>
+                    <p class="text-gray-500 mt-1">Please sign in to continue</p>
+                </div>
+
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-600 mb-1">Username</label>
+                        <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter your username" autocomplete="username" required>
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-600 mb-1">Password</label>
+                        <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter your password" autocomplete="current-password" required>
+                    </div>
+                    <div id="login-error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3" role="alert"></div>
+                    <div>
+                        <button type="submit" class="w-full flex items-center justify-center px-4 py-3 mt-2 bg-gradient-to-r from-blue-600 to-purple-700 text-white font-bold rounded-md shadow-md hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"></path></svg>
+                            Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <p class="text-center text-sm text-gray-500 mt-6">© 2025 TVET CDACC. Made by Mr. Bett.</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <header class="bg-gradient-to-r from-blue-600 to-purple-700 shadow-lg">
+            <div class="container mx-auto px-4 md:px-8 py-3">
+                <div class="flex items-center space-x-4">
+                    <div id="header-logo-container" class="h-12 w-12"></div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white leading-tight">Assessment Tool Generator</h1>
+                        <p class="text-sm font-semibold text-blue-200">Made by Mr. Bett</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="container mx-auto p-4 md:p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 xl:col-span-3">
+                    <div class="bg-white p-6 rounded-lg shadow-xl shadow-purple-200/50 sticky top-8">
+                        <h2 class="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-700">Settings</h2>
+                        <form id="control-panel" class="space-y-6">
+                             <div>
+                                <label for="courseTitle" class="block text-sm font-medium text-gray-600 mb-1">Course Title</label>
+                                <input type="text" id="courseTitle" value="ELECTRICAL INSTALLATION" placeholder="e.g., Level 2 Diploma in Carpentry" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                            </div>
+                            <div>
+                                <label for="module" class="block text-sm font-medium text-gray-600 mb-1">Module</label>
+                                <input type="text" id="module" value="ENG/OS/EI/CR/03/3/MA" placeholder="e.g., CAR201: Timber Framing Techniques" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                            </div>
+                            <div>
+                                <label for="paperName" class="block text-sm font-medium text-gray-600 mb-1">Name of the Paper</label>
+                                <input type="text" id="paperName" value="Install Conduit System" placeholder="e.g., Practical Test 1: Timber Joints" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                            </div>
+                            <div>
+                                <label for="knqfLevel" class="block text-sm font-medium text-gray-600 mb-1">KNQF Level</label>
+                                <select id="knqfLevel" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="3" selected>Level 3</option>
+                                    <option value="4">Level 4</option>
+                                    <option value="5">Level 5</option>
+                                    <option value="6">Level 6</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="curriculumElements" class="block text-sm font-medium text-gray-600 mb-1">Elements to be tested</label>
+                                <textarea id="curriculumElements" placeholder="Paste curriculum points or skills to be assessed here." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[150px]" rows="6" required>- Identify Conduit Accessories
+- Prepare and Mount Conduit Work Pieces
+- Install Electrical Cables and Accessories
+- Perform Test and Inspection</textarea>
+                            </div>
+                             <div>
+                                <label for="paperDescription" class="block text-sm font-medium text-gray-600 mb-1">Paper Structure Description</label>
+                                <textarea id="paperDescription" placeholder="Describe how the assessment paper should be structured..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[150px]" rows="6">The assessment should be divided into three timed sections. The first section should test identification of tools and materials. The second should test a basic skill (e.g., making a joint). The final section must be a comprehensive task requiring the candidate to interpret a diagram/scenario, plan, execute the main task, and perform tests.</textarea>
+                            </div>
+                            <div class="space-y-4 pt-2">
+                                <button type="submit" id="generate-btn" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-md shadow-md hover:from-pink-600 hover:to-purple-700 disabled:!bg-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105">
+                                    <span id="generate-btn-content">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 mr-2 inline-block"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.455-2.455L12.45 18l1.197-.398a3.375 3.375 0 002.455-2.455L16.5 14.25l.398 1.197a3.375 3.375 0 002.455 2.455l1.197.398-1.197.398a3.375 3.375 0 00-2.455 2.455z"></path></svg>
+                                        Generate Practical Paper
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 xl:col-span-9">
+                    <div id="output-container" class="bg-white/60 backdrop-blur-sm p-6 rounded-lg shadow-lg relative min-h-[calc(100vh-200px)]">
+                        <!-- Loader -->
+                        <div id="loader" class="hidden absolute inset-0 bg-white bg-opacity-75 items-center justify-center z-20">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.3s]"></div>
+                                <div class="w-4 h-4 rounded-full bg-purple-500 animate-bounce [animation-delay:-0.15s]"></div>
+                                <div class="w-4 h-4 rounded-full bg-pink-500 animate-bounce"></div>
+                            </div>
+                        </div>
+                        <!-- Error Display -->
+                        <div id="output-error" class="hidden text-red-600 bg-red-100 p-4 rounded-md"></div>
+                        <!-- Display Area -->
+                        <div id="output-display">
+                            <!-- Initial State -->
+                            <div id="initial-state" class="flex flex-col items-center justify-center h-full text-center">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-20 w-20 text-purple-200 mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
+                                <h3 class="text-xl font-semibold text-gray-700">Your generated documents will appear here.</h3>
+                                <p class="text-gray-500 mt-2">Fill in the details on the left and click "Generate" to create your first practical paper.</p>
+                            </div>
+                        </div>
+                         <!-- Content Area -->
+                        <div id="content-area" class="space-y-12"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="main.js"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

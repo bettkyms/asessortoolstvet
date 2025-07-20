@@ -1,0 +1,6 @@
+{
+  "name": "Assessor Tool Generator",
+  "description": "An AI-powered application to generate various assessment tools like multiple-choice questions, practical checklists, and case studies for technical institutions.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
